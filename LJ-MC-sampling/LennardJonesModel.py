@@ -33,7 +33,7 @@ class LennardJonesModel(object):
         for i in xrange(N):
             for j in xrange(i+1,N):
                 r = self.getDistancePBC(postions[i],postions[j])
-                energy += self.getLJpotential(r)
+                if r<self.r_cutoff: energy += self.getLJpotential(r)
         return energy
     #-------------------------------
 

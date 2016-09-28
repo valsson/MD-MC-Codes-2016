@@ -11,10 +11,10 @@ kBoltzman = 1.0
 temperature = 0.7
 beta = 1.0/(kBoltzman*temperature)
 r_cutoff = 2.5
-num_particles = 128
-BoxLength = 10
+num_particles = 64
+BoxLength = 6
 cell = np.array([BoxLength, BoxLength, BoxLength])
-num_mc_sweeps = 1000
+num_mc_sweeps = 100
 max_displacement = 0.5
 #
 fn_traj = "traj.xyz"
@@ -32,7 +32,7 @@ total_moves = 0
 accepted_moves = 0
 
 for i in xrange(num_mc_sweeps):
-    for i in xrange(num_particles):
+    for k in xrange(num_particles):
         total_moves += 1
 
         current_postions = particles.postions
@@ -50,5 +50,6 @@ for i in xrange(num_mc_sweeps):
             particles.postion = trial_postions
     #--------------------------
     particles.writePostionsToFile(fn_traj,wrap_pbc=True,append=True)
-
-print np.float64(accepted_moves)/np.float64(total_moves)
+    if i % (num_mc_sweeps/100) == 0:
+        acc_ratio = np.float64(accepted_moves)/np.float64(total_moves)
+        print '{0} of {1} MC sweeps done: accepted_ratio = {2}'.format(i,num_mc_sweeps,acc_ratio)
