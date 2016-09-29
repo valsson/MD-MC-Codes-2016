@@ -5,7 +5,7 @@ from MuellerBrownPotential import MuellerBrownPotential
 from LogExpOfHarmonicWellsPotential import LogExpOfHarmonicWellsPotential
 from MonteCarloSimulator import MonteCarloSimulator
 
-T = 4.0
+T = 2.0
 
 # potential = LogExpOfHarmonicWellsPotential()
 potential = MuellerBrownPotential()
