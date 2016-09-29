@@ -9,14 +9,16 @@ class ParticleContainer(object):
                 self,
                 num_particles,
                 cell,
-                particle_type):
+                particle_type,
+                r_nlist):
         self.num_particles = num_particles
         self.cell = np.array(cell)
         self.postions = np.zeros([num_particles,3])
         self.velocites = np.zeros([num_particles,3])
         self.particle_names = []
         for i in xrange(self.num_particles): self.particle_names.append(particle_type)
-
+        self.r_nlist = r_nlist
+        self.r2_nlist = self.r_nlist**2
     #-------------------------------
 
     def randomizePostions(self,random_seed=-1):
@@ -54,6 +56,27 @@ class ParticleContainer(object):
             out_str = "  {0}   {1:20.9f}  {2:20.9f}  {3:20.9f}\n".format(a,p[0],p[1],p[2])
             f.write(out_str)
         f.close()
+    #-------------------------------
+
+    def getSquaredDistance(self,i,j):
+        vec = self.postions[i]-self.postions[j]
+        return np.sum(vec**2)
+    #-------------------------------
+
+    def getSquaredDistancePBC(self,i,j):
+        vec = self.postions[i]-self.postions[j]
+        vec = vec - np.floor(vec/self.cell) * self.cell
+        return np.sum(vec**2)
+    #-------------------------------
+
+    def updateNeighbourList(self):
+        self.neighbour_list = []
+        for i in xrange(self.num_particles):
+            for j in xrange(i+1,self.num_particles):
+                r2 = self.getSquaredDistancePBC(i,j)
+                if r2 < self.r2_nlist:
+                    self.neighbour_list.append([i,j])
+        self.neighbour_list = np.array(self.neighbour_list)
     #-------------------------------
 
 #-------------------------------
