@@ -35,13 +35,26 @@ class ParticleContainer(object):
         else:
             indexes = [particle_index]
         if random_seed >= 0: np.random.seed(random_seed)
-        new_postions = self.postions
+        new_postions = np.copy(self.postions)
         for k in indexes:
             new_postions[k][0] += max_displacement * np.random.uniform(-1,1)
             new_postions[k][1] += max_displacement * np.random.uniform(-1,1)
             new_postions[k][2] += max_displacement * np.random.uniform(-1,1)
         return new_postions
     #-------------------------------
+
+    def randomDisplacement(self,max_displacement,particle_index=-1,random_seed=-1):
+        if particle_index < 0:
+            indexes = range(self.num_particles)
+        else:
+            indexes = [particle_index]
+        if random_seed >= 0: np.random.seed(random_seed)
+        for k in indexes:
+            self.postions[k][0] += max_displacement * np.random.uniform(-1,1)
+            self.postions[k][1] += max_displacement * np.random.uniform(-1,1)
+            self.postions[k][2] += max_displacement * np.random.uniform(-1,1)
+    #-------------------------------
+
 
     def writePostionsToFile(self,filename,wrap_pbc=True,append=True):
         if append:
@@ -77,6 +90,15 @@ class ParticleContainer(object):
                 if r2 < self.r2_nlist:
                     self.neighbour_list.append([i,j])
         self.neighbour_list = np.array(self.neighbour_list)
+    #-------------------------------
+
+    def getAllSquaredDistancesPBC(self):
+        distances = []
+        for i in xrange(self.num_particles):
+            for j in xrange(i+1,self.num_particles):
+                r2 = self.getSquaredDistancePBC()
+                if r2<r2_cutoff: distances.append(r2)
+        return np.array(distances)
     #-------------------------------
 
 #-------------------------------
