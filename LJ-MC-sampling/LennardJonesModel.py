@@ -31,8 +31,8 @@ class LennardJonesModel(object):
     def getEnergyFromPostions(self,postions):
         N = postions.shape[0]
         energy = 0.0;
-        for i in xrange(N):
-            for j in xrange(i+1,N):
+        for i in range(N):
+            for j in range(i+1,N):
                 r2 = self.getSquaredDistancePBC(postions[i],postions[j])
                 if r2<self.r2_cutoff: energy += self.getLJpotential(r2)
         return energy
@@ -40,7 +40,7 @@ class LennardJonesModel(object):
 
     def getEnergyFromDistances(self,squared_distances):
         energy = 0.0;
-        for i in xrange(squared_distances.shape[0]):
+        for i in range(squared_distances.shape[0]):
             if r2<self.r2_cutoff: energy += self.getLJpotential(squared_distances[i])
         return energy
     #-------------------------------

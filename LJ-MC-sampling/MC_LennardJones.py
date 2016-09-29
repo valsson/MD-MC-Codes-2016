@@ -14,7 +14,7 @@ def getLJpotential(r2):
 
 def getEnergyFromDistances(squared_distances):
     energy = 0.0;
-    for i in xrange(squared_distances.shape[0]):
+    for i in range(squared_distances.shape[0]):
         if squared_distances[i]<r2_cutoff: energy += getLJpotential(squared_distances[i])
     return energy
 #-------------------------------
@@ -53,8 +53,8 @@ writePostionsToFile(fn_traj,postions,[particle_type],cell,False)
 total_moves = 0
 accepted_moves = 0
 
-for i in xrange(num_mc_sweeps):
-    for k in xrange(num_particles):
+for i in range(num_mc_sweeps):
+    for k in range(num_particles):
         total_moves += 1
 
         rnd_index = np.random.randint(num_particles)

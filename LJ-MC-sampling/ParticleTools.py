@@ -3,7 +3,7 @@ import numpy as np
 
 def randomizePostions(postions,cell,random_seed=None):
     if random_seed is not None: np.random.seed(random_seed)
-    for i in xrange(postions.shape[0]):
+    for i in range(postions.shape[0]):
         postions[i][0] = np.random.uniform(0,cell[0])
         postions[i][1] = np.random.uniform(0,cell[1])
         postions[i][2] = np.random.uniform(0,cell[2])
@@ -27,7 +27,7 @@ def writePostionsToFile(filename,postions,particle_names,cell=None,append=True):
         f = open(filename,'w')
 
     f.write("  {0}\n\n".format(num_particles))
-    for i in xrange(num_particles):
+    for i in range(num_particles):
         a = particle_names[i]
         p = postions[i]
         if cell is not None: p = p - np.floor(p/cell) * cell
@@ -45,8 +45,8 @@ def getSquaredDistance(pos_i,pos_j,cell=None):
 def getAllSquaredDistances(postions,r2_cutoff=float('inf'),cell=None):
     distances = []
     num_particles = postions.shape[0]
-    for i in xrange(num_particles):
-        for j in xrange(i+1,num_particles):
+    for i in range(num_particles):
+        for j in range(i+1,num_particles):
             r2 = getSquaredDistance(postions[i],postions[j],cell)
             if r2<r2_cutoff: distances.append(r2)
     return np.array(distances)
@@ -55,7 +55,7 @@ def getAllSquaredDistances(postions,r2_cutoff=float('inf'),cell=None):
 def getAllSquaredDistancesForOneParticle(postions,index,r2_cutoff=float('inf'),cell=None):
     distances = []
     num_particles = postions.shape[0]
-    for i in xrange(num_particles):
+    for i in range(num_particles):
         if i==index: continue
         r2 = getSquaredDistance(postions[index],postions[i],cell)
         if r2<r2_cutoff: distances.append(r2)
