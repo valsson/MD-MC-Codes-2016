@@ -127,34 +127,17 @@ def plotData(Data, FigNumber=1):
     plt.plot(N,StddevN, 'b--', linewidth=4)
     plt.figure(FigNumber+2)
     plt.plot(N,SqrtN*StddevN, 'b--', linewidth=4)
+    plt.figure(FigNumber+3)
+    plt.plot(1.0/sqrtN,StddevN, 'b--', linewidth=4)
     plt.show()
+
+
 #----------------------------------
 
 
 
 
-#(N, sqrtN, MeanN, StddevN, AllEstimates) = runManyRuns(10000, NumRuns=100, function=getEstimateOfPiIntegral)
-(N, sqrtN, MeanN, StddevN, AllEstimates) = runManyRuns(10000, NumRuns=1000, function=getEstimateOfPi)
+(N, sqrtN, MeanN, StddevN, AllEstimates) = runManyRuns(1000, NumRuns=100, function=getEstimateOfPiIntegral)
+#(N, sqrtN, MeanN, StddevN, AllEstimates) = runManyRuns(1000, NumRuns=1000, function=getEstimateOfPi)
 Data = (N, sqrtN, MeanN, StddevN, AllEstimates)
 plotData(Data)
-
-
-
-
-
-
-
-
-# mean = np.mean(FinalValues)
-# stddev = np.std(FinalValues)
-# min = np.min(FinalValues)
-# max = np.max(FinalValues)
-#
-#
-# plt.figure(2)
-# plt.hist(FinalValues,bins=40,normed=True,histtype='bar')
-# x = np.linspace(min,max,100)
-# plt.plot(x, norm.pdf(x, loc=mean, scale=stddev))
-# print x
-# print norm.pdf(x, loc=mean, scale=stddev)
-# plt.show()
