@@ -166,11 +166,14 @@ class MonteCarloSimulator(object):
     #-------------------------------
 
     def plotTrajectoryTimeSeries(self,FigNumber=10):
+        ylabel = ['x','y','z']
         for i in range(self.dimension):
             plt.figure(FigNumber+i)
             plt.clf()
             traj = self.getTrajectoryArray()[:,i]
             plt.plot(traj)
+            plt.xlabel('Time')
+            plt.ylabel(ylabel+' coordinate')
         plt.show()
     #-------------------------------
 

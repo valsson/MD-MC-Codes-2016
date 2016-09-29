@@ -114,6 +114,8 @@ def plotData(Data, FigNumber=1):
     plt.xlim(0, NumSamples)
     plt.ylim(exact_value-FigOffset1, exact_value+FigOffset1)
     plt.xticks( np.linspace(0,NumSamples,6, endpoint=True) )
+    plt.xlabel('N')
+    plt.ylabel('Estimate of pi')
     # plt.yticks(
     #    [pi-1.2,pi-1.0, pi-0.8, pi-0.6, pi-0.4, pi-0.2, pi-0.0, pi+0.2, pi+0.4, pi+0.6, pi+0.8, pi+1.0, pi+1.2],
     #    [r'$\pi-1.2$', r'', r'$\pi-0.8$', r'', r'$\pi-0.4$', r'', r'$\pi$', r'',
@@ -125,10 +127,16 @@ def plotData(Data, FigNumber=1):
     #
     plt.figure(FigNumber+1)
     plt.plot(N,StddevN, 'b--', linewidth=4)
+    plt.xlabel('N')
+    plt.ylabel('StdDev')
     plt.figure(FigNumber+2)
     plt.plot(N,SqrtN*StddevN, 'b--', linewidth=4)
+    plt.xlabel('N')
+    plt.ylabel('StdDev*sqrt(N)')
     plt.figure(FigNumber+3)
     plt.plot(1.0/sqrtN,StddevN, 'b--', linewidth=4)
+    plt.xlabel('1/sqrt(N)')
+    plt.ylabel('StdDev')
     plt.show()
 
 
