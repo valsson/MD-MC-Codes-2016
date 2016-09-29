@@ -1,5 +1,5 @@
 import numpy as np
-import copy
+import sys
 
 from ParticleTools import *
 
@@ -40,15 +40,25 @@ max_displacement = 0.2
 nlist_update = 5
 #
 fn_traj = "traj.xyz"
+fn_traj_gro = "traj.gro"
+header_gro = "LJ" + str(num_particles) + ": mc_step={0}"
+input_grofile = 'in.gro'
 # ---------------------------------------
 
 r_nlist = r_cutoff + 2*nlist_update*max_displacement
 if InitialSeed >= 0: np.random.seed(InitialSeed)
 
+if len(input_grofile)>0:
+    (postions, cell2) = readPostionsFromFileGro(input_grofile)
+    if postions.shape[0]!=num_particles: sys.exit("Input gro file has wrong number of particles")
+    if (cell != cell2).all(): sys.exit("Input gro file has the wrong cell size")
+else:
+    postions = np.zeros([num_particles,3])
+    randomizePostions(postions,cell)
+writePostionsToFileXYZ(fn_traj,postions,[particle_type],cell,False)
+writePostionsToFileGro(fn_traj_gro,postions,[particle_type],header_gro.format(0),cell,False)
 
-postions = np.zeros([num_particles,3])
-randomizePostions(postions,cell)
-writePostionsToFile(fn_traj,postions,[particle_type],cell,False)
+
 
 total_moves = 0
 accepted_moves = 0
@@ -79,7 +89,8 @@ for i in range(num_mc_sweeps):
             accepted_moves += 1
             postions = np.copy(trial_postions)
     #--------------------------
-    writePostionsToFile(fn_traj,postions,[particle_type],cell,True)
-    if i % (num_mc_sweeps/100) == 0:
+    writePostionsToFileXYZ(fn_traj,postions,[particle_type],cell,True)
+    writePostionsToFileGro(fn_traj_gro,postions,[particle_type],header_gro.format(i+1),cell,True)
+    if (i+1) % (num_mc_sweeps/100) == 0:
         acc_ratio = np.float64(accepted_moves)/np.float64(total_moves)
         print '{0:6d} of {1:6d} MC sweeps done: accepted_ratio = {2:7.5f}'.format(i+1,num_mc_sweeps,acc_ratio)
