@@ -172,6 +172,9 @@ class MonteCarloSimulator(object):
             plt.clf()
             traj = self.getTrajectoryArray()[:,i]
             plt.plot(traj)
+            ylim_min = self.potentialClass.getGridLimitsMin()[i]
+            ylim_max = self.potentialClass.getGridLimitsMax()[i]
+            plt.ylim(ylim_min,ylim_max)
             plt.xlabel('Time')
             plt.ylabel(ylabel[i]+' coordinate')
         plt.show()
