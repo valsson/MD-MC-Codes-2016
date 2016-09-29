@@ -173,7 +173,7 @@ class MonteCarloSimulator(object):
             traj = self.getTrajectoryArray()[:,i]
             plt.plot(traj)
             plt.xlabel('Time')
-            plt.ylabel(ylabel+' coordinate')
+            plt.ylabel(ylabel[i]+' coordinate')
         plt.show()
     #-------------------------------
 
