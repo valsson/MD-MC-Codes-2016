@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from DataTools import *
 
 NumSweeps = 10000
-T=1.0
+T=2.5
 
 plotSpinStateEvery = 1000
 m1 = IsingModel(FigNum=1, L=41, Temperature=T, Dimension=2,InitialState='random')
