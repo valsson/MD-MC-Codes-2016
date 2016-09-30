@@ -84,7 +84,13 @@ def readPostionsFromFileGro(filename):
 def getSquaredDistance(pos_i,pos_j,cell=None):
     vec = pos_i - pos_j
     if cell is not None: vec = vec - np.rint(vec/cell) * cell
-    return np.sum(vec**2)
+    return vec[0]**2 + vec[1]**2 + vec[2]**2
+#-------------------------------
+
+def getDistance(pos_i,pos_j,cell=None):
+    vec = pos_i - pos_j
+    if cell is not None: vec = vec - np.rint(vec/cell) * cell
+    return np.sqrt(vec[0]**2 + vec[1]**2 + vec[2]**2)
 #-------------------------------
 
 def getAllSquaredDistances(postions,r2_cutoff=float('inf'),cell=None):
