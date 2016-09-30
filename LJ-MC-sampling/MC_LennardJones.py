@@ -44,15 +44,12 @@ BoxLength = 6.1
 cell = np.array([BoxLength, BoxLength, BoxLength])
 num_mc_sweeps = 100
 max_displacement = 0.2
-nlist_update = 5
 #
 fn_traj_gro = "traj.gro"
 header_gro = "LJ" + str(num_particles) + ": mc_step={0}"
 input_grofile = 'in.gro'
 # ---------------------------------------
 
-r_nlist = r_cutoff + 2*nlist_update*max_displacement
-if InitialSeed >= 0: np.random.seed(InitialSeed)
 
 if len(input_grofile)>0:
     (postions, cell2) = readPostionsFromFileGro(input_grofile)
@@ -71,6 +68,11 @@ energies.append(current_total_energy)
 
 total_moves = 0
 accepted_moves = 0
+
+if InitialSeed >= 0:
+    np.random.seed(InitialSeed)
+else:
+    np.random.seed()
 
 for i in range(num_mc_sweeps):
     for k in range(num_particles):
