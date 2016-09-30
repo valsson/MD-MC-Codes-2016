@@ -36,7 +36,6 @@ particle_type = "Ar"
 beta = 1.0/(kBoltzman*temperature)
 r_cutoff = 2.5
 r2_cutoff = r_cutoff**2
-r2_cutoff = float("inf")
 ener_cutoff = 0.0
 ener_cutoff = getLJpotential(r2_cutoff)
 num_particles = 128
