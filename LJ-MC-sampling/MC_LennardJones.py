@@ -31,7 +31,7 @@ sigma = 1.0
 epsilon = 1.0
 InitialSeed = -1
 kBoltzman = 1.0
-temperature = 0.7
+temperature = 2.0
 particle_type = "Ar"
 beta = 1.0/(kBoltzman*temperature)
 r_cutoff = 2.5
@@ -39,14 +39,14 @@ r2_cutoff = r_cutoff**2
 ener_cutoff = 0.0
 ener_cutoff = getLJpotential(r2_cutoff)
 num_particles = 128
-BoxLength = 6.1
+BoxLength = 5.1
 cell = np.array([BoxLength, BoxLength, BoxLength])
-num_mc_sweeps = 100
+num_mc_sweeps = 200
 max_displacement = 0.2
 #
 fn_traj_gro = "traj.gro"
 header_gro = "LJ" + str(num_particles) + ": mc_step={0}"
-input_grofile = 'in.gro'
+input_grofile = 'LJ128-Solid.gro'
 # ---------------------------------------
 
 
