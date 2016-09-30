@@ -52,8 +52,8 @@ input_grofile = 'in.gro'
 
 if len(input_grofile)>0:
     (postions, cell2) = readPostionsFromFileGro(input_grofile)
-    if postions.shape[0]!=num_particles: sys.exit("Input gro file has wrong number of particles")
-    if (cell != cell2).any(): sys.exit("Input gro file has the wrong cell size")
+    if postions.shape[0]!=num_particles: sys.exit("Error: input gro file has wrong number of particles")
+    if (cell != cell2).any(): sys.exit("Error: input gro file has the wrong cell size")
 else:
     postions = np.zeros([num_particles,3])
     randomizePostions(postions,cell)
