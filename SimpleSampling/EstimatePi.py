@@ -98,7 +98,8 @@ def runManyRuns(NumSamples,NumRuns=50,function=getEstimateOfPi):
     return Data
 #----------------------------------
 
-def plotData(Data, FigNumber=1):
+def plotData(Data, FigNumber=1, FigFilenamePrefix=None):
+    FigFormat='png'
     exact_value = pi
     #
     N = Data[0]
@@ -125,18 +126,32 @@ def plotData(Data, FigNumber=1):
         plt.plot( AllEstimates[i,:] )
     plt.plot([0, NumSamples], [exact_value, exact_value], 'k--', linewidth=4)
     #
+    if FigFilenamePrefix is not None: plt.savefig(FigFilenamePrefix+'.1.'+FigFormat, transparent=True, format=FigFormat,dpi=300)
+    #
     plt.figure(FigNumber+1)
-    plt.plot(N,StddevN, 'b--', linewidth=4)
+    plt.plot(N,StddevN, 'b', linewidth=4)
     plt.xlabel('N')
     plt.ylabel('StdDev')
+    if FigFilenamePrefix is not None: plt.savefig(FigFilenamePrefix+'.2.'+FigFormat, transparent=True, format=FigFormat,dpi=300)
+    #
     plt.figure(FigNumber+2)
-    plt.plot(N,SqrtN*StddevN, 'b--', linewidth=4)
+    plt.plot(N,StddevN, 'b', linewidth=4)
+    plt.xlabel('N')
+    plt.ylabel('StdDev')
+    plt.ylim(0,StddevN[100])
+    if FigFilenamePrefix is not None: plt.savefig(FigFilenamePrefix+'.3.'+FigFormat, transparent=True, format=FigFormat,dpi=300)
+    #
+    plt.figure(FigNumber+3)
+    plt.plot(N,SqrtN*StddevN, 'b', linewidth=4)
     plt.xlabel('N')
     plt.ylabel('StdDev*sqrt(N)')
-    plt.figure(FigNumber+3)
-    plt.plot(1.0/sqrtN,StddevN, 'b--', linewidth=4)
+    if FigFilenamePrefix is not None: plt.savefig(FigFilenamePrefix+'.4.'+FigFormat, transparent=True, format=FigFormat,dpi=300)
+    #
+    plt.figure(FigNumber+4)
+    plt.plot(1.0/sqrtN,StddevN, 'b', linewidth=4)
     plt.xlabel('1/sqrt(N)')
     plt.ylabel('StdDev')
+    if FigFilenamePrefix is not None: plt.savefig(FigFilenamePrefix+'.5.'+FigFormat, transparent=True, format=FigFormat,dpi=300)
     plt.show()
 
 
@@ -145,7 +160,7 @@ def plotData(Data, FigNumber=1):
 
 
 
-(N, sqrtN, MeanN, StddevN, AllEstimates) = runManyRuns(1000, NumRuns=100, function=getEstimateOfPiIntegral)
+(N, sqrtN, MeanN, StddevN, AllEstimates) = runManyRuns(10000, NumRuns=1, function=getEstimateOfPiIntegral)
 #(N, sqrtN, MeanN, StddevN, AllEstimates) = runManyRuns(1000, NumRuns=1000, function=getEstimateOfPi)
 Data = (N, sqrtN, MeanN, StddevN, AllEstimates)
-plotData(Data)
+plotData(Data,FigFilenamePrefix='figure')
