@@ -1,6 +1,7 @@
 import numpy as np
 from matplotlib.colors import ListedColormap
 import matplotlib.pyplot as plt
+import time
 
 class MonteCarloSimulator(object):
 
@@ -265,10 +266,15 @@ class MonteCarloSimulator(object):
     #-------------------------------
 
     def runMC(self,numberOfMoves,verbose=True):
+        start_time = time.time()
+        last_prnt_time = time.time()
         for i in range(numberOfMoves):
             self.doOneMonteCarloMove()
             if verbose and (i+1) % (numberOfMoves/10) == 0:
-                print "{:8d} of {:8d} steps done".format(i+1,numberOfMoves)
+                exc_time =  time.time() - last_prnt_time
+                last_prnt_time = time.time()
+                print "{:8d} of {:8d} steps done - time for last {:d} steps: {:.3f} sec".format(i+1,numberOfMoves,(numberOfMoves/10),exc_time)
+        print "Total time: {:.3f}".format(time.time()-start_time)
     #-------------------------------
 
     def getAverageAcceptence(self):
