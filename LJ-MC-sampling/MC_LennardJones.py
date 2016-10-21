@@ -41,7 +41,7 @@ ener_cutoff = getLJpotential(r2_cutoff)
 num_particles = 128
 BoxLength = 5.1
 cell = np.array([BoxLength, BoxLength, BoxLength])
-num_mc_sweeps = 200
+num_mc_sweeps = 500
 max_displacement = 0.2
 #
 fn_traj_gro = "traj.gro"
