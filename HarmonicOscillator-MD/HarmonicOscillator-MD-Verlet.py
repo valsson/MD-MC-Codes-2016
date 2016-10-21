@@ -9,9 +9,6 @@ angular_freq = np.sqrt(k/m)
 freq = angular_freq/(2.0*np.pi)
 period = 1.0/freq
 
-
-print angular_freq,period
-
 def getPotentialEnergy(x):
     potential_ener = 0.5*k*x**2
     return potential_ener
@@ -42,8 +39,8 @@ def getTotalEnergy(x,v):
 
 
 #
-num_periods = 5
-time_step = 0.5
+num_periods = 200
+time_step = 0.0001
 # num_steps = 1000
 num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
 initial_position = 1.0
@@ -51,6 +48,13 @@ initial_position = 1.0
 #initial_velocity = (initial_position - initial_prev_position) / time_step
 initial_velocity = -100.0
 print initial_velocity
+
+# analytical solution:
+phi = np.arctan(-initial_velocity/(initial_position*angular_freq))
+amplitude =  initial_position/np.cos(phi)
+
+
+
 # ----------------------
 
 times = []
@@ -91,7 +95,6 @@ for i in range(num_steps):
     curr_pot_ener = getPotentialEnergy(curr_position)
     curr_kin_ener = getKineticEnergy(curr_velocity)
     curr_tot_ener = curr_pot_ener + curr_kin_ener
-    print curr_velocity, curr_kin_ener
     #
     times.append( time )
     positions.append( curr_position )
@@ -107,6 +110,8 @@ velocites = np.array(velocites)
 pot_energies = np.array(pot_energies)
 kin_energies = np.array(kin_energies)
 tot_energies  = np.array(tot_energies)
+
+positions_analytical = amplitude*np.cos(angular_freq*times+phi)
 
 plt.figure(1)
 plt.plot(times,tot_energies)
@@ -126,4 +131,9 @@ plt.show()
 
 plt.figure(5)
 plt.plot(times,positions)
+plt.plot(times,positions_analytical)
+plt.show()
+
+plt.figure(6)
+plt.plot(times,positions-positions_analytical)
 plt.show()
