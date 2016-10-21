@@ -4,10 +4,10 @@ from IsingModel import IsingModel
 import matplotlib.pyplot as plt
 from DataTools import *
 
-NumSweeps = 10000
-T=2.5
+NumSweeps = 1000
+T=1.8
 
-plotSpinStateEvery = 1000
+plotSpinStateEvery = 1
 m1 = IsingModel(FigNum=1, L=41, Temperature=T, Dimension=2,InitialState='random')
 # m1.randomizeSpins()
 
