@@ -19,8 +19,11 @@ MCsim = MonteCarloSimulator(
 MCsim.resetRun()
 MCsim.setPosition( potential.getMinima()[0] )
 MCsim.runMC(NumMCmoves)
+print ' '
+MCsim.printAverageAcceptence()
+print ' '
+MCsim.printTrajectoryMeanAndStddev()
+print ' '
 MCsim.plotPotentialAndTrajectory()
 MCsim.plotTrajectoryTimeSeries()
 MCsim.plotTrajectoryHistogramAndFES()
-MCsim.printAverageAcceptence()
-MCsim.printTrajectoryMeanAndStddev()
