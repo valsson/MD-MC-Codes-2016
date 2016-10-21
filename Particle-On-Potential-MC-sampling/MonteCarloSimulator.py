@@ -274,7 +274,8 @@ class MonteCarloSimulator(object):
                 exc_time =  time.time() - last_prnt_time
                 last_prnt_time = time.time()
                 print "{:8d} of {:8d} steps done - time for last {:d} steps: {:.3f} sec".format(i+1,numberOfMoves,(numberOfMoves/10),exc_time)
-        print "Total time: {:.3f}".format(time.time()-start_time)
+        print ' '
+        print " Total time: {:.3f} sec".format(time.time()-start_time)
     #-------------------------------
 
     def getAverageAcceptence(self):
