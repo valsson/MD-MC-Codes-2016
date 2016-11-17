@@ -1,13 +1,37 @@
+#! /usr/bin/env python
+
 import numpy as np
 import matplotlib.pyplot as plt
+from DataTools import writeDataToFile
+import argparse
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--time-step',dest='time_step',required=True)
+parser.add_argument('--output-file',dest='fn_out',required=False)
+args = parser.parse_args()
 
 # Parameters of potential
 m = 1.0
-k = 10.0
+k = (2.0*np.pi)**2
 angular_freq = np.sqrt(k/m)
 freq = angular_freq/(2.0*np.pi)
 period = 1.0/freq
+
+# MD Parameters
+time_step = np.float64(args.time_step)
+if(args.fn_out):
+    fn_out = args.fn_out
+else:
+    fn_out = 'results.data'
+showPlots = False
+num_periods = 20
+# num_steps = 1000
+num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
+initial_position = 2.0
+initial_velocity = 0.0
+
+
+
 
 def getPotentialEnergy(x):
     potential_ener = 0.5*k*x**2
@@ -37,26 +61,11 @@ def getTotalEnergy(x,v):
 #-------------------------------
 
 
-
-#
-num_periods = 200
-time_step = 0.0001
-# num_steps = 1000
-num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
-initial_position = 1.0
-#initial_prev_position = 2.0
-#initial_velocity = (initial_position - initial_prev_position) / time_step
-initial_velocity = -100.0
-print initial_velocity
-
 # analytical solution:
 phi = np.arctan(-initial_velocity/(initial_position*angular_freq))
 amplitude =  initial_position/np.cos(phi)
 
-
-
 # ----------------------
-
 times = []
 positions = []
 velocites = []
@@ -64,10 +73,8 @@ pot_energies = []
 kin_energies = []
 tot_energies = []
 
-
 time = 0.0
 curr_position = initial_position
-# prev_position = initial_prev_position
 prev_position = curr_position-initial_velocity*time_step + 0.5*getForce(curr_position)*time_step**2
 curr_velocity = initial_velocity
 
@@ -75,23 +82,16 @@ curr_pot_ener = getPotentialEnergy(curr_position)
 curr_kin_ener = getKineticEnergy(curr_velocity)
 curr_tot_ener = curr_pot_ener + curr_kin_ener
 
-times.append( time )
-positions.append( curr_position )
-velocites.append( curr_velocity )
-pot_energies.append( curr_pot_ener )
-kin_energies.append( curr_kin_ener )
-tot_energies.append( curr_tot_ener )
-
 for i in range(num_steps):
     if (i+1) % (num_steps/10) == 0:
         print 'MD step {0:6d} of {1:6d}'.format(i+1,num_steps)
-    time += time_step
+    # get force at t
     accleration = getAccleration(curr_position)
+    # get new position at t+dt
     new_position = 2.0*curr_position - prev_position + accleration*time_step**2
+    # get velocity at t
     curr_velocity = (new_position - prev_position) / (2.0*time_step)
-    prev_position = curr_position
-    curr_position = new_position
-    #
+    # get energies at t
     curr_pot_ener = getPotentialEnergy(curr_position)
     curr_kin_ener = getKineticEnergy(curr_velocity)
     curr_tot_ener = curr_pot_ener + curr_kin_ener
@@ -102,6 +102,11 @@ for i in range(num_steps):
     pot_energies.append( curr_pot_ener )
     kin_energies.append( curr_kin_ener )
     tot_energies.append( curr_tot_ener )
+    #
+    prev_position = curr_position
+    curr_position = new_position
+    time += time_step
+    #
 #----------------------------------------
 
 times = np.array(times)
@@ -112,28 +117,42 @@ kin_energies = np.array(kin_energies)
 tot_energies  = np.array(tot_energies)
 
 positions_analytical = amplitude*np.cos(angular_freq*times+phi)
+velocites_analytical = -angular_freq*amplitude*np.sin(angular_freq*times+phi)
 
-plt.figure(1)
-plt.plot(times,tot_energies)
-plt.show()
+writeDataToFile(fn_out,
+                [times,positions,velocites,pot_energies,kin_energies,tot_energies,positions_analytical,velocites_analytical],
+                ['time','pos','vel','pot_ene','kin_ene','tot_ene','pos_an','vel_an'],
+                constantsNames=['time_step','period','amplitude','k','m'],
+                constantsValues=[time_step,period,amplitude,k,m],
+                dataFormat='%15.8f')
 
-plt.figure(2)
-plt.plot(times,pot_energies)
-plt.show()
 
-plt.figure(3)
-plt.plot(times,kin_energies)
-plt.show()
 
-plt.figure(4)
-plt.plot(times,velocites)
-plt.show()
+if showPlots:
+    plt.figure(1)
+    plt.plot(times,tot_energies)
+    plt.plot(times,pot_energies)
+    plt.plot(times,kin_energies)
+    plt.show()
 
-plt.figure(5)
-plt.plot(times,positions)
-plt.plot(times,positions_analytical)
-plt.show()
+    plt.figure(2)
+    plt.plot(times,pot_energies)
+    plt.show()
 
-plt.figure(6)
-plt.plot(times,positions-positions_analytical)
-plt.show()
+    plt.figure(3)
+    plt.plot(times,kin_energies)
+    plt.show()
+
+    plt.figure(4)
+    plt.plot(times,velocites)
+    plt.show()
+
+    plt.figure(5)
+    plt.plot(times,positions)
+    plt.plot(times,positions_analytical)
+    plt.show()
+
+    plt.figure(6)
+    plt.plot(times,positions-positions_analytical)
+    plt.show()
+#
