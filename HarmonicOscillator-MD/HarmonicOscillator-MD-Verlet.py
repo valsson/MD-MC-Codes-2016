@@ -30,9 +30,6 @@ num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
 initial_position = 2.0
 initial_velocity = 0.0
 
-
-
-
 def getPotentialEnergy(x):
     potential_ener = 0.5*k*x**2
     return potential_ener
@@ -64,6 +61,7 @@ def getTotalEnergy(x,v):
 # analytical solution:
 phi = np.arctan(-initial_velocity/(initial_position*angular_freq))
 amplitude =  initial_position/np.cos(phi)
+conserved_energy = getPotentialEnergy(amplitude)
 
 # ----------------------
 times = []
@@ -122,8 +120,8 @@ velocites_analytical = -angular_freq*amplitude*np.sin(angular_freq*times+phi)
 writeDataToFile(fn_out,
                 [times,positions,velocites,pot_energies,kin_energies,tot_energies,positions_analytical,velocites_analytical],
                 ['time','pos','vel','pot_ene','kin_ene','tot_ene','pos_an','vel_an'],
-                constantsNames=['time_step','period','amplitude','k','m'],
-                constantsValues=[time_step,period,amplitude,k,m],
+                constantsNames=['time_step','period','amplitude','k','m','phi','conserved_energy'],
+                constantsValues=[time_step,period,amplitude,k,m,phi,conserved_energy],
                 dataFormat='%15.8f')
 
 

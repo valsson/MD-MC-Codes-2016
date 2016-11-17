@@ -20,7 +20,9 @@ def writeDataToFile(filename, data,
     if len(fieldNames)==len(data):
         fieldsStr += 'FIELDS '
         for f in fieldNames: fieldsStr += f + ' '
-    for i in range(len(constantsNames)): fieldsStr += '\n' + 'SET ' + str(constantsNames[i]) + ' ' + str(constantsValues[i])
+    for i in range(len(constantsNames)):
+        str1 = '\nSET {0:} {1:'+dataFormat[1:]+'}'
+        fieldsStr += str1.format(constantsNames[i],constantsValues[i])
     data2 = np.column_stack(data)
     if appendFile:
         file = open(filename,'a')
