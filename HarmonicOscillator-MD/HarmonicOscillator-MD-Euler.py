@@ -6,7 +6,7 @@ from DataTools import writeDataToFile
 import argparse
 
 parser = argparse.ArgumentParser()
-parser.add_argument('--time-step',dest='time_step',required=True)
+parser.add_argument('--time-step',dest='time_step',required=False)
 parser.add_argument('--output-file',dest='fn_out',required=False)
 args = parser.parse_args()
 
@@ -18,15 +18,18 @@ freq = angular_freq/(2.0*np.pi)
 period = 1.0/freq
 
 # MD Parameters
-time_step = np.float64(args.time_step)
+if(args.time_step):
+    time_step = np.float64(args.time_step)
+else:
+    time_step = 0.01*period
 if(args.fn_out):
     fn_out = args.fn_out
 else:
     fn_out = 'results.data'
 showPlots = False
 num_periods = 20
-# num_steps = 1000
-num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
+num_steps = 10000
+# num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
 initial_position = 2.0
 initial_velocity = 0.0
 
