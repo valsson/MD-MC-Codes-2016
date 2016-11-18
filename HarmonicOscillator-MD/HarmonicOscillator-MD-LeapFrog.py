@@ -27,10 +27,10 @@ if(args.fn_out):
 else:
     fn_out = 'results.data'
 showPlots = False
-num_periods = 20
-# num_steps = 1000
-num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
-# initial conditions at t=0
+#num_periods = 20
+#num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
+num_steps = 10000
+# initial postion and velocity at t=0
 initial_position = 2.0
 initial_velocity = 0.0
 
@@ -90,7 +90,7 @@ for i in range(num_steps):
     new_position = curr_position + new_velocity*time_step
     # get energies at t
     curr_pot_ener = getPotentialEnergy(curr_position)
-    curr_kin_ener = getKineticEnergy(curr_velocity)
+    curr_kin_ener = getKineticEnergy((new_velocity+curr_velocity)/2.0)
     curr_tot_ener = curr_pot_ener + curr_kin_ener
     #
     times.append( time )

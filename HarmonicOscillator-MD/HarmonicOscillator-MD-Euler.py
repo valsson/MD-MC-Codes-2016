@@ -27,9 +27,10 @@ if(args.fn_out):
 else:
     fn_out = 'results.data'
 showPlots = False
-num_periods = 20
+#num_periods = 20
+#num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
 num_steps = 10000
-# num_steps = np.int(np.rint( (num_periods*period)/time_step   ))
+# initial postion and velocity at t=0
 initial_position = 2.0
 initial_velocity = 0.0
 
