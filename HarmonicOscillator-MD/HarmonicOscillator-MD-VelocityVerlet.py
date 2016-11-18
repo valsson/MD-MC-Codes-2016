@@ -73,7 +73,6 @@ tot_energies = []
 
 time = 0.0
 curr_position = initial_position
-prev_position = curr_position-initial_velocity*time_step + 0.5*getAccleration(curr_position)*time_step**2
 curr_velocity = initial_velocity
 
 for i in range(num_steps):
@@ -82,9 +81,9 @@ for i in range(num_steps):
     # get force at t
     accleration = getAccleration(curr_position)
     # get new position at t+dt
-    new_position = 2.0*curr_position - prev_position + accleration*time_step**2
-    # get velocity at t
-    curr_velocity = (new_position - prev_position) / (2.0*time_step)
+    new_position = curr_position + curr_velocity*time_step + 0.5*accleration*time_step**2
+    # get velocity at t+dt
+    new_velocity = curr_velocity + 0.5*(getAccleration(new_position)+accleration)*time_step
     # get energies at t
     curr_pot_ener = getPotentialEnergy(curr_position)
     curr_kin_ener = getKineticEnergy(curr_velocity)
@@ -97,8 +96,8 @@ for i in range(num_steps):
     kin_energies.append( curr_kin_ener )
     tot_energies.append( curr_tot_ener )
     #
-    prev_position = curr_position
     curr_position = new_position
+    curr_velocity = new_velocity
     time += time_step
     #
 #----------------------------------------
