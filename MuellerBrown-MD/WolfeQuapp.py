@@ -12,6 +12,15 @@ saddlePoints = (np.array( [ -1.013, -0.036 ] ),
                 np.array( [  0.093,  0.174 ] ),
                 np.array( [ -0.208, -1.407 ] ))
 
+xmin =   -2.0
+ymin =   -2.0
+zmin =  -10.0
+xmax =    2.0
+ymax =    2.0
+zmax =   10.0
+plot_min = [ xmin, ymin, zmin ]
+plot_max = [ xmax, ymax, zmax ]
+
 
 
 def getPotential(position):
@@ -29,7 +38,6 @@ def getPotentialAndForces(position):
     force = np.array([ 0.0 , 0.0 ])
     x = position[0]
     y = position[1]
-    print x,y
     pot = x**4 + y**4 - 2.0*x**2 - 4.0*y**2 + x*y + 0.3*x + 0.1*y
     force[0] = -(4.0*x**3 - 4.0*x + y + 0.3)
     force[1] = -(4.0*y**3 - 8.0*y + x + 0.1)
