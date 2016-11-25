@@ -78,16 +78,19 @@ tot_energies = []
 time = 0.0
 curr_position = initial_position
 curr_velocity = initial_velocity
+accleration = getAccleration(curr_position)
 
 for i in range(num_steps):
     if (i+1) % (num_steps/10) == 0:
         print 'MD step {0:6d} of {1:6d}'.format(i+1,num_steps)
     # get force at t
-    accleration = getAccleration(curr_position)
     # get new position at t+dt
     new_position = curr_position + curr_velocity*time_step + 0.5*accleration*time_step**2
+    # get force at t+dt
+    new_accleration = getAccleration(new_position)
     # get velocity at t+dt
-    new_velocity = curr_velocity + 0.5*(getAccleration(new_position)+accleration)*time_step
+    new_velocity = curr_velocity + 0.5*(new_accleration+accleration)*time_step
+    accleration = new_accleration
     # get energies at t
     curr_pot_ener = getPotentialEnergy(curr_position)
     curr_kin_ener = getKineticEnergy(curr_velocity)
