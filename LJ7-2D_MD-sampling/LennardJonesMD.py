@@ -1,6 +1,7 @@
 import numpy as np
 from TrajectoryIO import *
 import matplotlib.pyplot as plt
+from DataTools import writeDataToFile
 
 sigma = 1.0
 epsilon = 1.0
@@ -59,11 +60,18 @@ def getKineticEnergy(v):
     return kin
 #-------------------------------
 
-def randomVeloctites(shape,T,seed):
+def randomVeloctites(shape,T,seed=None):
     mean = 0.0
     stddev = np.sqrt( (kB*T)/m )
-    np.random.seed(seed)
+    if seed is not None: np.random.seed(seed)
     return np.random.normal(mean,stddev,shape)
+#-------------------------------
+
+def rescaleVeloctites(v,T,dof):
+    setVelocityCenterOfMassToZero(v)
+    K = getKineticEnergy(v)
+    K_target = 0.5*dof*kB*T
+    v *= np.sqrt(K_target/K)
 #-------------------------------
 
 def setVelocityCenterOfMassToZero(v):
@@ -84,36 +92,31 @@ def getDistancesFromOrigin(p):
 
 
 
-T = 0.2
-seed = 15234
+T = 0.8
+seed = None
+dt = 0.005
+num_steps = 100000
 #
 dim = 2
 input_geometry = 'LJ7-2D-initial.xyz'
-#input_velocites = 'velocites_input.xyz'
-input_velocites = ''
 fn_traj = "traj.xyz"
-traj_stride = 1
+fn_data = 'results.data'
+stride_traj = 10
+stride_com = 1
+stride_rescale_vel = 1000
 #
-dt = 0.005
-num_steps = 100000
 
 (postions_in, cell_in) = readPostionsFromFileXYZ(input_geometry,dim)
 nump = postions_in.shape[0]
-dof = dim*nump - 4.0
+dof = dim*nump - 2.0
 p = postions_in
 cell = cell_in
-setCenterOfMassToZero(p)
 
-
-
-
-if len(input_velocites)>0:
-    (velocites_in, cell_in) = readPostionsFromFileXYZ(input_velocites,dim)
-    if (velocites_in.shape != p.shape ): sys.exit('Error: input velocites does not match intial geometry')
-    v = velocites_in
-else:
-    v = randomVeloctites(p.shape,T,seed)
+v = randomVeloctites(p.shape,T,seed)
+rescaleVeloctites(v,T,dof)
 header = "time={0}"
+
+setCenterOfMassToZero(p)
 setVelocityCenterOfMassToZero(v)
 
 potential_energy = np.zeros(num_steps+1)
@@ -132,15 +135,24 @@ for i in range(num_steps):
     p += v*dt+0.5*(F/m)*dt**2
     (pot_new, Fnew) = getPotentialAndForces(p,cell)
     v += (0.5/m)*(Fnew+F)*dt
+    if (i+1) % stride_com == 0: setVelocityCenterOfMassToZero(v)
+    if (i+1) % stride_rescale_vel == 0: rescaleVeloctites(v,T,dof)
+    if (i+1) % stride_traj == 0: writePostionsToFileXYZ(fn_traj,p,['Ar'],header.format(times[i+1]),cell,True)
     kinetic_energy[i+1] = getKineticEnergy(v)
     potential_energy[i+1] = pot_new
     F = Fnew
-    writePostionsToFileXYZ(fn_traj,p,['Ar'],header.format(times[i+1]),cell,True)
+
+
 writePostionsToFileXYZ('postions_final.xyz',p,['Ar'],'',cell,False)
 writePostionsToFileXYZ('velocites_final.xyz',v,['Ar'],'',None,False)
 
 total_energy = potential_energy + kinetic_energy
-temperature = kinetic_energy/(dof*kB)
+temperature = 2.0*kinetic_energy/(dof*kB)
+
+writeDataToFile(fn_data,
+                [times,potential_energy,kinetic_energy,total_energy,temperature],
+                ['time','pot','kin','total','T'],
+                dataFormat='%15.8f')
 
 plt.figure(3)
 plt.plot(times,potential_energy)
