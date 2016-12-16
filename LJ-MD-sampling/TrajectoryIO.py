@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def writePostionsToFileXYZ(filename,postions,particle_names,cell=None,append=True):
+def writePostionsToFileXYZ(filename,postions,particle_names,header='',cell=None,append=True):
     num_particles = postions.shape[0]
     dim = postions.shape[1]
     if len(particle_names)==1: particle_names = particle_names*num_particles
@@ -10,12 +10,13 @@ def writePostionsToFileXYZ(filename,postions,particle_names,cell=None,append=Tru
     else:
         f = open(filename,'w')
 
-    f.write("  {0}\n\n".format(num_particles))
+    f.write("  {0}\n".format(num_particles))
+    f.write(" {0}\n".format(header))
     for i in range(num_particles):
         a = particle_names[i]
-        p = np.zeros(3)
-        p[:dim] = postions[i]
+        p = postions[i]
         if cell is not None: p = p - np.floor(p/cell) * cell
+        if(dim==2): p = np.append(p,0.0)
         out_str = "  {0}   {1:20.9f}  {2:20.9f}  {3:20.9f}\n".format(a,p[0],p[1],p[2])
         f.write(out_str)
     f.close()
@@ -34,9 +35,9 @@ def writePostionsToFileGro(filename,postions,particle_names,header,cell=None,app
     for i in range(num_particles):
         rstr = "SOL"
         a = particle_names[i]
-        p = np.zeros(3)
-        p[:dim] = postions[i]
+        p = postions[i]
         if cell is not None: p = p - np.floor(p/cell) * cell
+        if(dim==2): p = np.append(p,0.0)
         out_str = "{0:5d}{1:5s}{2:5s}{3:5d}{4:8.3f}{5:8.3f}{6:8.3f}\n".format(i,rstr,a,i,p[0],p[1],p[2])
         f.write(out_str)
     if cell is not None:

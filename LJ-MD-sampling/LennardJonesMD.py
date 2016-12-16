@@ -11,7 +11,11 @@ r_cutoff = float('inf')
 r2_cutoff = r_cutoff**2
 ener_shift = 4.0*epsilon*(1.0/r2_cutoff**6-1.0/r2_cutoff**3)
 
-def getPotentialAndForces(p,cell):
+r_walls = 3.0
+r2_walls = r_walls**2
+k_walls = 100.0
+
+def getLennardJonesPotentialAndForces(p,cell):
     nump = p.shape[0]
     forces = np.zeros(p.shape)
     pot = 0.0
@@ -29,6 +33,25 @@ def getPotentialAndForces(p,cell):
     return (pot,forces)
 #-------------------------------
 
+
+def getConfiningPotentialAndForces(p):
+    forces = np.zeros(p.shape)
+    pot = 0.0
+    for i in range(nump):
+        r2 = np.sum(p[i]**2)
+        if r2>r2_walls:
+            r = np.sqrt(r2)
+            pot += 0.5*k_walls*(r-r_walls)**2
+            forces[i] = -k_walls*p[i]*(1.0-r_walls/r)
+    return (pot,forces)
+#-------------------------------
+
+def getPotentialAndForces(p,cell=None):
+    (pot_lj, forces_lj) = getLennardJonesPotentialAndForces(p,cell)
+    (pot_w, forces_w) = getConfiningPotentialAndForces(p)
+    return (pot_lj+pot_w, forces_lj+forces_w)
+#-------------------------------
+
 def getKineticEnergy(v):
     kin = 0.0
     for i in range(v.shape[0]):
@@ -36,31 +59,62 @@ def getKineticEnergy(v):
     return kin
 #-------------------------------
 
-def initializeVeloctites(v,T,seed):
+def randomVeloctites(shape,T,seed):
     mean = 0.0
     stddev = np.sqrt( (kB*T)/m )
     np.random.seed(seed)
-    v = np.random.normal(mean,stddev,v.shape)
+    return np.random.normal(mean,stddev,shape)
 #-------------------------------
 
-T = 0.1
+def setVelocityCenterOfMassToZero(v):
+    v_com = np.average(v,axis=0)
+    for i in range(v.shape[0]): v[i] -= v_com
+#-------------------------------
+
+def setCenterOfMassToZero(p):
+    p_com = np.average(p,axis=0)
+    for i in range(p.shape[0]): p[i] -= p_com
+#-------------------------------
+
+def getDistancesFromOrigin(p):
+    return np.sum(p**2,1)
+#-------------------------------
+
+
+
+
+
+T = 0.2
 seed = 15234
 #
 dim = 2
-input_geo = 'LJ7-2D-initial.xyz'
+input_geometry = 'LJ7-2D-initial.xyz'
+#input_velocites = 'velocites_input.xyz'
+input_velocites = ''
 fn_traj = "traj.xyz"
+traj_stride = 1
 #
 dt = 0.005
-num_steps = 10000
+num_steps = 100000
 
-(postions_in, cell_in) = readPostionsFromFileXYZ(input_geo,dim)
+(postions_in, cell_in) = readPostionsFromFileXYZ(input_geometry,dim)
 nump = postions_in.shape[0]
-dof = dim*nump
+dof = dim*nump - 4.0
 p = postions_in
 cell = cell_in
-v = np.zeros(p.shape)
-initializeVeloctites(v,T,seed)
-header_gro = "LJ" + str(nump) + ": time={0}"
+setCenterOfMassToZero(p)
+
+
+
+
+if len(input_velocites)>0:
+    (velocites_in, cell_in) = readPostionsFromFileXYZ(input_velocites,dim)
+    if (velocites_in.shape != p.shape ): sys.exit('Error: input velocites does not match intial geometry')
+    v = velocites_in
+else:
+    v = randomVeloctites(p.shape,T,seed)
+header = "time={0}"
+setVelocityCenterOfMassToZero(v)
 
 potential_energy = np.zeros(num_steps+1)
 kinetic_energy = np.zeros(num_steps+1)
@@ -72,9 +126,7 @@ times = np.arange(num_steps+1)*dt
 potential_energy[0] = pot
 kinetic_energy[0] = getKineticEnergy(v)
 
-writePostionsToFileXYZ(fn_traj,p,['Ar'],None,False)
-writePostionsToFileXYZ('forces.data',F,['Ar'],None,False)
-
+writePostionsToFileXYZ(fn_traj,p,['Ar'],header.format(times[0]),cell,False)
 
 for i in range(num_steps):
     p += v*dt+0.5*(F/m)*dt**2
@@ -83,7 +135,9 @@ for i in range(num_steps):
     kinetic_energy[i+1] = getKineticEnergy(v)
     potential_energy[i+1] = pot_new
     F = Fnew
-    writePostionsToFileXYZ(fn_traj,p,['Ar'])
+    writePostionsToFileXYZ(fn_traj,p,['Ar'],header.format(times[i+1]),cell,True)
+writePostionsToFileXYZ('postions_final.xyz',p,['Ar'],'',cell,False)
+writePostionsToFileXYZ('velocites_final.xyz',v,['Ar'],'',None,False)
 
 total_energy = potential_energy + kinetic_energy
 temperature = kinetic_energy/(dof*kB)
@@ -93,7 +147,7 @@ plt.plot(times,potential_energy)
 plt.figure(4)
 plt.plot(times,kinetic_energy)
 plt.figure(5)
-#plt.ylim(np.min(total_energy)*1.1, np.max(total_energy)*1.1)
+plt.ylim(np.min(total_energy)*1.1, 0.0)
 plt.plot(times,total_energy)
 plt.figure(6)
 plt.plot(times,temperature)
